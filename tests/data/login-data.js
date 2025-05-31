@@ -1,4 +1,5 @@
 import { generateFuzzString, generateString } from "../utils/generateData";
+import { faker } from "@faker-js/faker";
 
 export const invalidLoginData = [
   {
@@ -56,6 +57,26 @@ export const invalidLoginData = [
   {
     username: generateFuzzString(15, "mixed"),
     password: generateFuzzString(15, "mixed"),
+    errors:
+      "Epic sadface: Username and password do not match any user in this service",
+  },
+
+  // 🔽 Faker-generated test cases
+  {
+    username: faker.internet.username({ firstName: "Jeanne", lastName: "Doe" }),
+    password: faker.internet.password(),
+    errors:
+      "Epic sadface: Username and password do not match any user in this service",
+  },
+  {
+    username: faker.lorem.word(),
+    password: faker.lorem.words(2),
+    errors:
+      "Epic sadface: Username and password do not match any user in this service",
+  },
+  {
+    username: faker.string.alphanumeric({ length: { min: 5, max: 10 } }),
+    password: faker.internet.password(30),
     errors:
       "Epic sadface: Username and password do not match any user in this service",
   },
