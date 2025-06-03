@@ -5,7 +5,7 @@ export const invalidLoginData = [
   {
     username: "",
     password: "",
-    errors: "Epic sadface: Username is require",
+    errors: "Epic sadface: Username is required",
   },
   {
     username: "              ",
