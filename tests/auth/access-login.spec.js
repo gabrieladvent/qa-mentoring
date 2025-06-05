@@ -11,9 +11,9 @@ test("Logged-in user cannot access login page", async ({ page }) => {
   await expect(page).toHaveURL(`${BASE_URL}/inventory.html`);
 
   await page.goto(`${BASE_URL}`);
-  await expect(page).toHaveURL(`${BASE_URL}`);
+  await expect(page).toHaveURL(`${BASE_URL}/inventory.html`);
 
   // this opsional only
-  // await expect(page.locator('[data-test="title"]')).toHaveText("Products");
-  // await expect(page.locator('[data-test="username"]')).toHaveCount(0);
+  await expect(page.locator('[data-test="title"]')).toHaveText("Products");
+  await expect(page.locator('[data-test="username"]')).toHaveCount(0);
 });
