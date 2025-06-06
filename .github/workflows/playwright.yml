@@ -1,21 +1,22 @@
-name: Web Automation Testing
+name: Web Automation Testing and Deploy
 
 on:
   push:
-    branches: 
+    branches:
       - main
   pull_request:
-    branches: 
+    branches:
       - main
   # schedule:
-    # - cron: "0 20 * * *"
+     # - cron: "0 20 * * *"
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
+    name: Run Playwright Tests
     runs-on: ubuntu-latest
     container:
-        image: mcr.microsoft.com/playwright:v1.52.0
+      image: mcr.microsoft.com/playwright:v1.52.0
 
     steps:
       - name: Checkout repository
@@ -42,26 +43,38 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # - name: Install Playwright
-      #   run: pnpm playwright install --with-deps
+      - name: Install Playwright browsers
+        run: pnpm playwright install --with-deps
 
       - name: Run Playwright tests
         run: pnpm playwright test
-        continue-on-error: true
-      
-      - name: Check report directory
-        run: ls -l playwright-report
+        continue-on-error: true 
 
-      - name: Upload Test Artifact
+      - name: Upload report artifact
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
           path: playwright-report
-      
-      - name: Deploy Test Report
-        if: always()
+
+  deploy:
+    name: Deploy Report to GitHub Pages
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download test report
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
+        if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwright-report
