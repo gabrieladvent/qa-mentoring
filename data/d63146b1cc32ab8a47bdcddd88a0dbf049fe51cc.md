@@ -1,0 +1,49 @@
+# Test info
+
+- Name: has title
+- Location: /__w/qa-mentoring/qa-mentoring/tests/example.spec.js:4:5
+
+# Error details
+
+```
+Error: browserType.launch: Target page, context or browser has been closed
+Browser logs:
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ Firefox is unable to launch if the $HOME folder isn't owned by the current user.                                  ║
+║ Workaround: Set the HOME=/root environment variable in your GitHub Actions workflow file when running Playwright. ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+Call log:
+  - <launching> /ms-playwright/firefox-1482/firefox/firefox -no-remote -headless -profile /tmp/playwright_firefoxdev_profile-WaVcUI -juggler-pipe -silent
+  - <launched> pid=1911
+  - [pid=1911][err] Running Nightly as root in a regular user's session is not supported.  ($HOME is /github/home which is owned by pwuser.)
+  - [pid=1911] <process did exit: exitCode=1, signal=null>
+  - [pid=1911] starting temporary directories cleanup
+
+```
+
+# Test source
+
+```ts
+   1 | // @ts-check
+   2 | import { test, expect } from '@playwright/test';
+   3 |
+>  4 | test('has title', async ({ page }) => {
+     |     ^ Error: browserType.launch: Target page, context or browser has been closed
+   5 |   await page.goto('https://playwright.dev/');
+   6 |
+   7 |   // Expect a title "to contain" a substring.
+   8 |   await expect(page).toHaveTitle(/Playwright/);
+   9 | });
+  10 |
+  11 | test('get started link', async ({ page }) => {
+  12 |   await page.goto('https://playwright.dev/');
+  13 |
+  14 |   // Click the get started link.
+  15 |   await page.getByRole('link', { name: 'Get started' }).click();
+  16 |
+  17 |   // Expects page to have a heading with the name of Installation.
+  18 |   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  19 | });
+  20 |
+```
