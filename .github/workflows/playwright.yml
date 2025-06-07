@@ -1,4 +1,4 @@
-name: Web Automation Testing and Deploy
+name: Web Automation Testing 
 
 on:
   push:
