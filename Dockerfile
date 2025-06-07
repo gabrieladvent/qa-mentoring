@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-# Install only necessary packages
+# Install necessary system dependencies including Chromium
 RUN apk add --no-cache \
     chromium \
     nss \
@@ -10,22 +10,30 @@ RUN apk add --no-cache \
     bash \
     dumb-init
 
-WORKDIR /app
-
-COPY package*.json ./
-
-# Install only core without browsers
-RUN npm install playwright-core && \
-    npm cache clean --force && \
-    npm prune --production && \
-    rm -rf /root/.cache
-
-# Set env to use system Chromium
+# Set environment variables for Playwright to use system Chromium
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PLAYWRIGHT_BROWSERS_PATH=0
 ENV CHROME_PATH=/usr/bin/chromium-browser
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+# Create app directory
+WORKDIR /app
+
+# Copy dependency definitions
+COPY package*.json ./
+
+# Install Playwright and dependencies
+RUN npm install playwright && \
+    npx playwright install chromium && \
+    npm cache clean --force && \
+    npm prune --production && \
+    rm -rf /root/.cache /root/.npm /tmp/*
+
+# Copy app source code
 COPY . .
 
+# Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["bash"]
+
+# Default command
+CMD ["npx", "playwright", "test"]
