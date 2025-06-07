@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-# Install all required dependencies for Chromium + Playwright
+# Install dependencies for Chromium + Playwright
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
@@ -24,18 +24,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Set env supaya browser tersimpan di image, bukan di cache user
+ENV PLAYWRIGHT_BROWSERS_PATH=0
+
 # Set working directory
 WORKDIR /app
 
-# Salin dependency nodejs
+# Copy dan install dependencies
 COPY package*.json ./
 RUN npm ci
 
-# Install Playwright browsers only (deps sudah kita install manual)
+# Install Playwright browser (Chromium) ke dalam image
 RUN npx playwright install chromium
 
 # Copy seluruh aplikasi
 COPY . .
 
-# Jalankan default test
+# Jalankan test
 CMD ["npx", "playwright", "test"]
