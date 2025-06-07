@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libatk1.0-0 \
     libcups2 \
     libdrm2 \
-    libgbm1 \
+    libgbm1 \ 
     libnspr4 \
     libnss3 \
     libxcomposite1 \
