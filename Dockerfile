@@ -37,5 +37,4 @@ RUN npx playwright install chromium
 
 COPY . .
 
-# Jalankan test
 CMD ["npx", "playwright", "test"]
