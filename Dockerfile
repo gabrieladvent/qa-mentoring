@@ -1,49 +1,41 @@
-FROM node:20-alpine
+FROM node:20-slim
 
-# Install dependencies sistem yang dibutuhkan Playwright browsers
-RUN apk add --no-cache \
-    bash \
-    dumb-init \
+# Install all required dependencies for Chromium + Playwright
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    nss \
-    freetype \
-    harfbuzz \
-    ttf-freefont \
-    fontconfig \
-    chromium \
-    mesa-gl \
-    libgcc \
-    libstdc++ \
-    alsa-lib \
-    libc6-compat \
-    libx11 \
-    libxcomposite \
-    libxdamage \
-    libxrandr \
-    libxext \
-    libxfixes \
-    libxi \
-    libxrender \
-    libxcb \
-    libxshmfence \
-    libxinerama \
-    mesa-dri-gallium \
-    mesa-egl \
-    mesa-gl \
-    && rm -rf /var/cache/apk/*
+    wget \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm1 \
+    libnspr4 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libasound2 \
+    xdg-utils \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
+# Salin dependency nodejs
 COPY package*.json ./
+RUN npm ci
 
-RUN npm install playwright && \
-    npx playwright install && \
-    npm cache clean --force && \
-    npm prune --production && \
-    rm -rf /root/.cache /root/.npm /tmp/*
+# Install Playwright browsers only (deps sudah kita install manual)
+RUN npx playwright install chromium
 
+# Copy seluruh aplikasi
 COPY . .
 
-ENTRYPOINT ["dumb-init", "--"]
-
+# Jalankan default test
 CMD ["npx", "playwright", "test"]
