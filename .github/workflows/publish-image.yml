@@ -1,0 +1,29 @@
+name: Docker Image Publish
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/publish-image.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker login --username gabrieladvent --password ${{ secrets.GH_PATH }} ghcr.io
+          docker build -t ghcr.io/gabrieladvent/playwright-ghcr:latest .
+      
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/gabrieladvent/playwright-ghcr:latest

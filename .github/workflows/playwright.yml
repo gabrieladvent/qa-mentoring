@@ -8,7 +8,7 @@ on:
     branches:
       - main
   # schedule:
-     # - cron: "0 20 * * *"
+  # - cron: "0 20 * * *"
   workflow_dispatch:
 
 jobs:
@@ -16,39 +16,26 @@ jobs:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.52.0
+      image: ghcr.io/gabrieladvent/playwright-ghcr:latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Install Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: "20"
-
-      # This step caches the pnpm store directory
-      # to speed up installation of dependencies in future runs.
-      - name: Cache pnpm store
+      - name: Cache node_modules
         uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: pnpm install
-
-      - name: Install Playwright browsers
-        run: pnpm playwright install --with-deps
+        run: npm install
 
       - name: Run Playwright tests
-        run: pnpm playwright test
-        continue-on-error: true 
+        run: npx playwright test
+        continue-on-error: true
 
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
